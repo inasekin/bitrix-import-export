@@ -1,8 +1,17 @@
 <?php
+
+/**  Require mPDF library */
+$pdfRendererClassFile = PHPExcel_Settings::getPdfRendererPath() . '/mpdf.php';
+if (file_exists($pdfRendererClassFile)) {
+    require_once $pdfRendererClassFile;
+} else {
+    throw new PHPExcel_Writer_Exception('Unable to load PDF Rendering library');
+}
+
 /**
- *  KDAPHPExcel
+ *  PHPExcel_Writer_PDF_mPDF
  *
- *  Copyright (c) 2006 - 2013 KDAPHPExcel
+ *  Copyright (c) 2006 - 2015 PHPExcel
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -18,48 +27,31 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- *  @category    KDAPHPExcel
- *  @package     KDAPHPExcel_Writer_PDF
- *  @copyright   Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
+ *  @category    PHPExcel
+ *  @package     PHPExcel_Writer_PDF
+ *  @copyright   Copyright (c) 2006 - 2015 PHPExcel (http://www.codeplex.com/PHPExcel)
  *  @license     http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt    LGPL
- *  @version     1.7.9, 2013-06-02
+ *  @version     ##VERSION##, ##DATE##
  */
-
-
-/**  Require mPDF library */
-$pdfRendererClassFile = KDAPHPExcel_Settings::getPdfRendererPath() . '/mpdf.php';
-if (file_exists($pdfRendererClassFile)) {
-    require_once $pdfRendererClassFile;
-} else {
-    throw new KDAPHPExcel_Writer_Exception('Unable to load PDF Rendering library');
-}
-
-/**
- *  KDAPHPExcel_Writer_PDF_mPDF
- *
- *  @category    KDAPHPExcel
- *  @package     KDAPHPExcel_Writer_PDF
- *  @copyright   Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- */
-class KDAPHPExcel_Writer_PDF_mPDF extends KDAPHPExcel_Writer_PDF_Core implements KDAPHPExcel_Writer_IWriter
+class PHPExcel_Writer_PDF_mPDF extends PHPExcel_Writer_PDF_Core implements PHPExcel_Writer_IWriter
 {
     /**
-     *  Create a new KDAPHPExcel_Writer_PDF
+     *  Create a new PHPExcel_Writer_PDF
      *
-     *  @param  KDAPHPExcel  $phpExcel  KDAPHPExcel object
+     *  @param  PHPExcel  $phpExcel  PHPExcel object
      */
-    public function __construct(KDAPHPExcel $phpExcel)
+    public function __construct(PHPExcel $phpExcel)
     {
         parent::__construct($phpExcel);
     }
 
     /**
-     *  Save KDAPHPExcel to file
+     *  Save PHPExcel to file
      *
      *  @param     string     $pFilename   Name of the file to save as
-     *  @throws    KDAPHPExcel_Writer_Exception
+     *  @throws    PHPExcel_Writer_Exception
      */
-    public function save($pFilename = NULL)
+    public function save($pFilename = null)
     {
         $fileHandle = parent::prepareForSave($pFilename);
 
@@ -68,26 +60,22 @@ class KDAPHPExcel_Writer_PDF_mPDF extends KDAPHPExcel_Writer_PDF_Core implements
 
         //  Check for paper size and page orientation
         if (is_null($this->getSheetIndex())) {
-            $orientation = ($this->_phpExcel->getSheet(0)->getPageSetup()->getOrientation()
-                == KDAPHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE)
-                    ? 'L'
-                    : 'P';
-            $printPaperSize = $this->_phpExcel->getSheet(0)->getPageSetup()->getPaperSize();
-            $printMargins = $this->_phpExcel->getSheet(0)->getPageMargins();
+            $orientation = ($this->phpExcel->getSheet(0)->getPageSetup()->getOrientation()
+                == PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE) ? 'L' : 'P';
+            $printPaperSize = $this->phpExcel->getSheet(0)->getPageSetup()->getPaperSize();
+            $printMargins = $this->phpExcel->getSheet(0)->getPageMargins();
         } else {
-            $orientation = ($this->_phpExcel->getSheet($this->getSheetIndex())->getPageSetup()->getOrientation()
-                == KDAPHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE)
-                    ? 'L'
-                    : 'P';
-            $printPaperSize = $this->_phpExcel->getSheet($this->getSheetIndex())->getPageSetup()->getPaperSize();
-            $printMargins = $this->_phpExcel->getSheet($this->getSheetIndex())->getPageMargins();
+            $orientation = ($this->phpExcel->getSheet($this->getSheetIndex())->getPageSetup()->getOrientation()
+                == PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE) ? 'L' : 'P';
+            $printPaperSize = $this->phpExcel->getSheet($this->getSheetIndex())->getPageSetup()->getPaperSize();
+            $printMargins = $this->phpExcel->getSheet($this->getSheetIndex())->getPageMargins();
         }
         $this->setOrientation($orientation);
 
         //  Override Page Orientation
         if (!is_null($this->getOrientation())) {
-            $orientation = ($this->getOrientation() == KDAPHPExcel_Worksheet_PageSetup::ORIENTATION_DEFAULT)
-                ? KDAPHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT
+            $orientation = ($this->getOrientation() == PHPExcel_Worksheet_PageSetup::ORIENTATION_DEFAULT)
+                ? PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT
                 : $this->getOrientation();
         }
         $orientation = strtoupper($orientation);
@@ -97,9 +85,10 @@ class KDAPHPExcel_Writer_PDF_mPDF extends KDAPHPExcel_Writer_PDF_Core implements
             $printPaperSize = $this->getPaperSize();
         }
 
-        if (isset(self::$_paperSizes[$printPaperSize])) {
-            $paperSize = self::$_paperSizes[$printPaperSize];
+        if (isset(self::$paperSizes[$printPaperSize])) {
+            $paperSize = self::$paperSizes[$printPaperSize];
         }
+
 
         //  Create PDF
         $pdf = new mpdf();
@@ -109,14 +98,14 @@ class KDAPHPExcel_Writer_PDF_mPDF extends KDAPHPExcel_Writer_PDF_Core implements
         $pdf->AddPage($orientation);
 
         //  Document info
-        $pdf->SetTitle($this->_phpExcel->getProperties()->getTitle());
-        $pdf->SetAuthor($this->_phpExcel->getProperties()->getCreator());
-        $pdf->SetSubject($this->_phpExcel->getProperties()->getSubject());
-        $pdf->SetKeywords($this->_phpExcel->getProperties()->getKeywords());
-        $pdf->SetCreator($this->_phpExcel->getProperties()->getCreator());
+        $pdf->SetTitle($this->phpExcel->getProperties()->getTitle());
+        $pdf->SetAuthor($this->phpExcel->getProperties()->getCreator());
+        $pdf->SetSubject($this->phpExcel->getProperties()->getSubject());
+        $pdf->SetKeywords($this->phpExcel->getProperties()->getKeywords());
+        $pdf->SetCreator($this->phpExcel->getProperties()->getCreator());
 
         $pdf->WriteHTML(
-            $this->generateHTMLHeader(FALSE) .
+            $this->generateHTMLHeader(false) .
             $this->generateSheetData() .
             $this->generateHTMLFooter()
         );
@@ -124,7 +113,6 @@ class KDAPHPExcel_Writer_PDF_mPDF extends KDAPHPExcel_Writer_PDF_Core implements
         //  Write to file
         fwrite($fileHandle, $pdf->Output('', 'S'));
 
-		parent::restoreStateAfterSave($fileHandle);
+        parent::restoreStateAfterSave($fileHandle);
     }
-
 }

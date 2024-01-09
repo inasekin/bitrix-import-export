@@ -1,8 +1,18 @@
 <?php
+
+/** PHPExcel root directory */
+if (!defined('PHPEXCEL_ROOT')) {
+    /**
+     * @ignore
+     */
+    define('PHPEXCEL_ROOT', dirname(__FILE__) . '/../');
+    require(PHPEXCEL_ROOT . 'PHPExcel/Autoloader.php');
+}
+
 /**
- * KDAPHPExcel
+ * PHPExcel_Settings
  *
- * Copyright (c) 2006 - 2013 KDAPHPExcel
+ * Copyright (c) 2006 - 2015 PHPExcel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,45 +28,33 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel_Settings
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
+ * @category   PHPExcel
+ * @package    PHPExcel_Settings
+ * @copyright  Copyright (c) 2006 - 2015 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt    LGPL
- * @version    1.7.9, 2013-06-02
+ * @version    ##VERSION##, ##DATE##
  */
-
-/** KDAPHPExcel root directory */
-if (!defined('KDAPHPEXCEL_ROOT')) {
-    /**
-     * @ignore
-     */
-    define('KDAPHPEXCEL_ROOT', dirname(__FILE__) . '/../');
-    require(KDAPHPEXCEL_ROOT . 'PHPExcel/Autoloader.php');
-}
-
-
-class KDAPHPExcel_Settings
+class PHPExcel_Settings
 {
     /**    constants */
     /**    Available Zip library classes */
-    const PCLZIP        = 'KDAPHPExcel_Shared_ZipArchive';
-    const ZIPARCHIVE    = 'ZipArchive';
-	const KDAIEZIPARCHIVE    = '\Bitrix\KdaImportexcel\ZipArchive';
+    const PCLZIP     = 'PHPExcel_Shared_ZipArchive';
+    const ZIPARCHIVE = 'ZipArchive';
 
     /**    Optional Chart Rendering libraries */
-    const CHART_RENDERER_JPGRAPH    = 'jpgraph';
+    const CHART_RENDERER_JPGRAPH = 'jpgraph';
 
     /**    Optional PDF Rendering libraries */
-    const PDF_RENDERER_TCPDF		= 'tcPDF';
-    const PDF_RENDERER_DOMPDF		= 'DomPDF';
-    const PDF_RENDERER_MPDF 		= 'mPDF';
+    const PDF_RENDERER_TCPDF  = 'tcPDF';
+    const PDF_RENDERER_DOMPDF = 'DomPDF';
+    const PDF_RENDERER_MPDF   = 'mPDF';
 
 
-    private static $_chartRenderers = array(
+    private static $chartRenderers = array(
         self::CHART_RENDERER_JPGRAPH,
     );
 
-    private static $_pdfRenderers = array(
+    private static $pdfRenderers = array(
         self::PDF_RENDERER_TCPDF,
         self::PDF_RENDERER_DOMPDF,
         self::PDF_RENDERER_MPDF,
@@ -65,80 +63,84 @@ class KDAPHPExcel_Settings
 
     /**
      * Name of the class used for Zip file management
-     *	e.g.
-     *		ZipArchive
+     *    e.g.
+     *        ZipArchive
      *
      * @var string
      */
-    private static $_zipClass    = self::ZIPARCHIVE;
+    private static $zipClass = self::ZIPARCHIVE;
 
 
     /**
      * Name of the external Library used for rendering charts
-     *	e.g.
-     *		jpgraph
+     *    e.g.
+     *        jpgraph
      *
      * @var string
      */
-    private static $_chartRendererName = NULL;
+    private static $chartRendererName;
 
     /**
      * Directory Path to the external Library used for rendering charts
      *
      * @var string
      */
-    private static $_chartRendererPath = NULL;
+    private static $chartRendererPath;
 
 
     /**
      * Name of the external Library used for rendering PDF files
-     *	e.g.
-     * 		mPDF
+     *    e.g.
+     *         mPDF
      *
      * @var string
      */
-    private static $_pdfRendererName = NULL;
+    private static $pdfRendererName;
 
     /**
      * Directory Path to the external Library used for rendering PDF files
      *
      * @var string
      */
-    private static $_pdfRendererPath = NULL;
-
+    private static $pdfRendererPath;
 
     /**
-     * Set the Zip handler Class that KDAPHPExcel should use for Zip file management (PCLZip or ZipArchive)
+     * Default options for libxml loader
      *
-     * @param string $zipClass	The Zip handler class that KDAPHPExcel should use for Zip file management
-     * 	 e.g. KDAPHPExcel_Settings::PCLZip or KDAPHPExcel_Settings::ZipArchive
-     * @return	boolean	Success or failure
+     * @var int
+     */
+    private static $libXmlLoaderOptions = null;
+
+    /**
+     * Set the Zip handler Class that PHPExcel should use for Zip file management (PCLZip or ZipArchive)
+     *
+     * @param string $zipClass    The Zip handler class that PHPExcel should use for Zip file management
+     *      e.g. PHPExcel_Settings::PCLZip or PHPExcel_Settings::ZipArchive
+     * @return    boolean    Success or failure
      */
     public static function setZipClass($zipClass)
     {
         if (($zipClass === self::PCLZIP) ||
-            ($zipClass === self::ZIPARCHIVE) ||
-			($zipClass === self::KDAIEZIPARCHIVE)
-			) {
-            self::$_zipClass = $zipClass;
-            return TRUE;
+            ($zipClass === self::ZIPARCHIVE)) {
+            self::$zipClass = $zipClass;
+            return true;
         }
-        return FALSE;
-    } // function setZipClass()
+        return false;
+    }
 
 
     /**
-     * Return the name of the Zip handler Class that KDAPHPExcel is configured to use (PCLZip or ZipArchive)
-     *	or Zip file management
+     * Return the name of the Zip handler Class that PHPExcel is configured to use (PCLZip or ZipArchive)
+     *    or Zip file management
      *
-     * @return string Name of the Zip handler Class that KDAPHPExcel is configured to use
-     *	for Zip file management
-     *	e.g. KDAPHPExcel_Settings::PCLZip or KDAPHPExcel_Settings::ZipArchive
+     * @return string Name of the Zip handler Class that PHPExcel is configured to use
+     *    for Zip file management
+     *    e.g. PHPExcel_Settings::PCLZip or PHPExcel_Settings::ZipArchive
      */
     public static function getZipClass()
     {
-        return self::$_zipClass;
-    } // function getZipClass()
+        return self::$zipClass;
+    }
 
 
     /**
@@ -148,8 +150,8 @@ class KDAPHPExcel_Settings
      */
     public static function getCacheStorageMethod()
     {
-        return KDAPHPExcel_CachedObjectStorageFactory::getCacheStorageMethod();
-    } // function getCacheStorageMethod()
+        return PHPExcel_CachedObjectStorageFactory::getCacheStorageMethod();
+    }
 
 
     /**
@@ -159,8 +161,8 @@ class KDAPHPExcel_Settings
      */
     public static function getCacheStorageClass()
     {
-        return KDAPHPExcel_CachedObjectStorageFactory::getCacheStorageClass();
-    } // function getCacheStorageClass()
+        return PHPExcel_CachedObjectStorageFactory::getCacheStorageClass();
+    }
 
 
     /**
@@ -170,13 +172,10 @@ class KDAPHPExcel_Settings
      * @param array $arguments Optional configuration arguments for the cacheing method
      * @return boolean Success or failure
      */
-    public static function setCacheStorageMethod(
-    	$method = KDAPHPExcel_CachedObjectStorageFactory::cache_in_memory,
-      $arguments = array()
-    )
+    public static function setCacheStorageMethod($method = PHPExcel_CachedObjectStorageFactory::cache_in_memory, $arguments = array())
     {
-        return KDAPHPExcel_CachedObjectStorageFactory::initialize($method, $arguments);
-    } // function setCacheStorageMethod()
+        return PHPExcel_CachedObjectStorageFactory::initialize($method, $arguments);
+    }
 
 
     /**
@@ -185,134 +184,134 @@ class KDAPHPExcel_Settings
      * @param string $locale The locale code to use (e.g. "fr" or "pt_br" or "en_uk")
      * @return boolean Success or failure
      */
-    public static function setLocale($locale='en_us')
+    public static function setLocale($locale = 'en_us')
     {
-        return KDAPHPExcel_Calculation::getInstance()->setLocale($locale);
-    } // function setLocale()
+        return PHPExcel_Calculation::getInstance()->setLocale($locale);
+    }
 
 
     /**
-     * Set details of the external library that KDAPHPExcel should use for rendering charts
+     * Set details of the external library that PHPExcel should use for rendering charts
      *
-     * @param string $libraryName	Internal reference name of the library
-     *	e.g. KDAPHPExcel_Settings::CHART_RENDERER_JPGRAPH
+     * @param string $libraryName    Internal reference name of the library
+     *    e.g. PHPExcel_Settings::CHART_RENDERER_JPGRAPH
      * @param string $libraryBaseDir Directory path to the library's base folder
      *
-     * @return	boolean	Success or failure
+     * @return    boolean    Success or failure
      */
     public static function setChartRenderer($libraryName, $libraryBaseDir)
     {
-        if (!self::setChartRendererName($libraryName))
-            return FALSE;
+        if (!self::setChartRendererName($libraryName)) {
+            return false;
+        }
         return self::setChartRendererPath($libraryBaseDir);
-    } // function setChartRenderer()
+    }
 
 
     /**
-     * Identify to KDAPHPExcel the external library to use for rendering charts
+     * Identify to PHPExcel the external library to use for rendering charts
      *
-     * @param string $libraryName	Internal reference name of the library
-     *	e.g. KDAPHPExcel_Settings::CHART_RENDERER_JPGRAPH
+     * @param string $libraryName    Internal reference name of the library
+     *    e.g. PHPExcel_Settings::CHART_RENDERER_JPGRAPH
      *
-     * @return	boolean	Success or failure
+     * @return    boolean    Success or failure
      */
     public static function setChartRendererName($libraryName)
     {
-        if (!in_array($libraryName,self::$_chartRenderers)) {
-            return FALSE;
+        if (!in_array($libraryName, self::$chartRenderers)) {
+            return false;
         }
+        self::$chartRendererName = $libraryName;
 
-        self::$_chartRendererName = $libraryName;
-
-        return TRUE;
-    } // function setChartRendererName()
+        return true;
+    }
 
 
     /**
-     * Tell KDAPHPExcel where to find the external library to use for rendering charts
+     * Tell PHPExcel where to find the external library to use for rendering charts
      *
-     * @param string $libraryBaseDir	Directory path to the library's base folder
-     * @return	boolean	Success or failure
+     * @param string $libraryBaseDir    Directory path to the library's base folder
+     * @return    boolean    Success or failure
      */
     public static function setChartRendererPath($libraryBaseDir)
     {
         if ((file_exists($libraryBaseDir) === false) || (is_readable($libraryBaseDir) === false)) {
-            return FALSE;
+            return false;
         }
-        self::$_chartRendererPath = $libraryBaseDir;
+        self::$chartRendererPath = $libraryBaseDir;
 
-        return TRUE;
-    } // function setChartRendererPath()
+        return true;
+    }
 
 
     /**
-     * Return the Chart Rendering Library that KDAPHPExcel is currently configured to use (e.g. jpgraph)
+     * Return the Chart Rendering Library that PHPExcel is currently configured to use (e.g. jpgraph)
      *
-     * @return string|NULL Internal reference name of the Chart Rendering Library that KDAPHPExcel is
-     *	currently configured to use
-     *	e.g. KDAPHPExcel_Settings::CHART_RENDERER_JPGRAPH
+     * @return string|NULL Internal reference name of the Chart Rendering Library that PHPExcel is
+     *    currently configured to use
+     *    e.g. PHPExcel_Settings::CHART_RENDERER_JPGRAPH
      */
     public static function getChartRendererName()
     {
-        return self::$_chartRendererName;
-    } // function getChartRendererName()
+        return self::$chartRendererName;
+    }
 
 
     /**
-     * Return the directory path to the Chart Rendering Library that KDAPHPExcel is currently configured to use
+     * Return the directory path to the Chart Rendering Library that PHPExcel is currently configured to use
      *
-     * @return string|NULL Directory Path to the Chart Rendering Library that KDAPHPExcel is
-     * 	currently configured to use
+     * @return string|NULL Directory Path to the Chart Rendering Library that PHPExcel is
+     *     currently configured to use
      */
     public static function getChartRendererPath()
     {
-        return self::$_chartRendererPath;
-    } // function getChartRendererPath()
+        return self::$chartRendererPath;
+    }
 
 
     /**
-     * Set details of the external library that KDAPHPExcel should use for rendering PDF files
+     * Set details of the external library that PHPExcel should use for rendering PDF files
      *
      * @param string $libraryName Internal reference name of the library
-     * 	e.g. KDAPHPExcel_Settings::PDF_RENDERER_TCPDF,
-     * 	KDAPHPExcel_Settings::PDF_RENDERER_DOMPDF
-     *  or KDAPHPExcel_Settings::PDF_RENDERER_MPDF
+     *     e.g. PHPExcel_Settings::PDF_RENDERER_TCPDF,
+     *     PHPExcel_Settings::PDF_RENDERER_DOMPDF
+     *  or PHPExcel_Settings::PDF_RENDERER_MPDF
      * @param string $libraryBaseDir Directory path to the library's base folder
      *
      * @return boolean Success or failure
      */
     public static function setPdfRenderer($libraryName, $libraryBaseDir)
     {
-        if (!self::setPdfRendererName($libraryName))
-            return FALSE;
+        if (!self::setPdfRendererName($libraryName)) {
+            return false;
+        }
         return self::setPdfRendererPath($libraryBaseDir);
-    } // function setPdfRenderer()
+    }
 
 
     /**
-     * Identify to KDAPHPExcel the external library to use for rendering PDF files
+     * Identify to PHPExcel the external library to use for rendering PDF files
      *
      * @param string $libraryName Internal reference name of the library
-     * 	e.g. KDAPHPExcel_Settings::PDF_RENDERER_TCPDF,
-     *	KDAPHPExcel_Settings::PDF_RENDERER_DOMPDF
-     * 	or KDAPHPExcel_Settings::PDF_RENDERER_MPDF
+     *     e.g. PHPExcel_Settings::PDF_RENDERER_TCPDF,
+     *    PHPExcel_Settings::PDF_RENDERER_DOMPDF
+     *     or PHPExcel_Settings::PDF_RENDERER_MPDF
      *
      * @return boolean Success or failure
      */
     public static function setPdfRendererName($libraryName)
     {
-        if (!in_array($libraryName,self::$_pdfRenderers)) {
-            return FALSE;
+        if (!in_array($libraryName, self::$pdfRenderers)) {
+            return false;
         }
+        self::$pdfRendererName = $libraryName;
 
-        self::$_pdfRendererName = $libraryName;
-
-        return TRUE;
-    } // function setPdfRendererName()
+        return true;
+    }
 
 
     /**
-     * Tell KDAPHPExcel where to find the external library to use for rendering PDF files
+     * Tell PHPExcel where to find the external library to use for rendering PDF files
      *
      * @param string $libraryBaseDir Directory path to the library's base folder
      * @return boolean Success or failure
@@ -320,38 +319,71 @@ class KDAPHPExcel_Settings
     public static function setPdfRendererPath($libraryBaseDir)
     {
         if ((file_exists($libraryBaseDir) === false) || (is_readable($libraryBaseDir) === false)) {
-            return FALSE;
+            return false;
         }
-        self::$_pdfRendererPath = $libraryBaseDir;
+        self::$pdfRendererPath = $libraryBaseDir;
 
-        return TRUE;
-    } // function setPdfRendererPath()
+        return true;
+    }
 
 
     /**
-     * Return the PDF Rendering Library that KDAPHPExcel is currently configured to use (e.g. dompdf)
+     * Return the PDF Rendering Library that PHPExcel is currently configured to use (e.g. dompdf)
      *
-     * @return string|NULL Internal reference name of the PDF Rendering Library that KDAPHPExcel is
-     * 	currently configured to use
-     *  e.g. KDAPHPExcel_Settings::PDF_RENDERER_TCPDF,
-     *  KDAPHPExcel_Settings::PDF_RENDERER_DOMPDF
-     *  or KDAPHPExcel_Settings::PDF_RENDERER_MPDF
+     * @return string|NULL Internal reference name of the PDF Rendering Library that PHPExcel is
+     *     currently configured to use
+     *  e.g. PHPExcel_Settings::PDF_RENDERER_TCPDF,
+     *  PHPExcel_Settings::PDF_RENDERER_DOMPDF
+     *  or PHPExcel_Settings::PDF_RENDERER_MPDF
      */
     public static function getPdfRendererName()
     {
-        return self::$_pdfRendererName;
-    } // function getPdfRendererName()
-
+        return self::$pdfRendererName;
+    }
 
     /**
-     * Return the directory path to the PDF Rendering Library that KDAPHPExcel is currently configured to use
+     * Return the directory path to the PDF Rendering Library that PHPExcel is currently configured to use
      *
-     * @return string|NULL Directory Path to the PDF Rendering Library that KDAPHPExcel is
-     *		currently configured to use
+     * @return string|NULL Directory Path to the PDF Rendering Library that PHPExcel is
+     *        currently configured to use
      */
     public static function getPdfRendererPath()
     {
-        return self::$_pdfRendererPath;
-    } // function getPdfRendererPath()
+        return self::$pdfRendererPath;
+    }
 
+    /**
+     * Set options for libxml loader
+     *
+     * @param   int   $options   Options for libxml loader
+     */
+    public static function setLibXmlLoaderOptions($options = null)
+    {
+        if (is_null($options) && defined('LIBXML_DTDLOAD')) {
+            $options = LIBXML_DTDLOAD | LIBXML_DTDATTR;
+        }
+        if (version_compare(PHP_VERSION, '5.2.11') >= 0) {
+            @libxml_disable_entity_loader((bool) $options);
+        }
+        self::$libXmlLoaderOptions = $options;
+    }
+
+    /**
+     * Get defined options for libxml loader.
+     * Defaults to LIBXML_DTDLOAD | LIBXML_DTDATTR when not set explicitly.
+     *
+     * @return int Default options for libxml loader
+     */
+    public static function getLibXmlLoaderOptions()
+    {
+        if (is_null(self::$libXmlLoaderOptions) && defined('LIBXML_DTDLOAD')) {
+            self::setLibXmlLoaderOptions(LIBXML_DTDLOAD | LIBXML_DTDATTR);
+        } elseif (is_null(self::$libXmlLoaderOptions)) {
+            self::$libXmlLoaderOptions = true;
+        }
+        if (version_compare(PHP_VERSION, '5.2.11') >= 0) {
+            @libxml_disable_entity_loader((bool) self::$libXmlLoaderOptions);
+        }
+        return self::$libXmlLoaderOptions;
+    }
 }

@@ -216,7 +216,8 @@ class CKDAExportExcelWriterXlsx {
 				
 				if($this->hideColumnTitles!='Y')
 				{
-					$this->writeRowStart(($colHeight = 0), $this->displayParams['COLUMN_TITLES']);
+                    $colHeight = 0;
+                    $this->writeRowStart($colHeight, $this->displayParams['COLUMN_TITLES']);
 					$this->titlesRowNum = $this->numRows;
 					foreach($arFields as $k=>$field)
 					{
@@ -1435,16 +1436,18 @@ class CKDAExportExcelWriterXlsx {
 			$currentStyleId = $this->currentStyleId;
 			if(isset($this->linkCells[$cell - 1]) && preg_match('/<a[^>]+class="kda\-ee\-conversion\-link"[^>]+href="([^"]*)"[^>]*>(.*)<\/a>/Uis', $value, $m))
 			{
+                $colHeight = 0;
 				$cellName = $this->arColLetters[$cell - 1].$this->numRows;
 				$this->addRelLink($cellName, $m[1]);
 				$value = $origValue = $m[2];
 				$arStyles['FONT_COLOR'] = '#0000FF';
 				$arStyles['STYLE_UNDERLINE'] = 'Y';
-				$currentStyleId = $this->setCurrentStyle(($colHeight=0), $arStyles, false);
+				$currentStyleId = $this->setCurrentStyle($colHeight, $arStyles, false);
 			}
 			elseif(!empty($arStyles))
 			{
-				$currentStyleId = $this->setCurrentStyle(($colHeight=0), $arStyles, false);
+                $colHeight = 0;
+				$currentStyleId = $this->setCurrentStyle($colHeight, $arStyles, false);
 			}
 			
 			$attrs = '';

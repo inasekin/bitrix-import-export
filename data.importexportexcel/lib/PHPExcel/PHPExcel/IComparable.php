@@ -1,6 +1,7 @@
 <?php
+
 /**
- * KDAPHPExcel
+ * PHPExcel_IComparable
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,28 +17,18 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version    1.7.9, 2013-06-02
+ * @category   PHPExcel
+ * @package    PHPExcel
+ * @copyright  Copyright (c) 2006 - 2015 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt    LGPL
+ * @version    ##VERSION##, ##DATE##
  */
-
-
-/**
- * KDAPHPExcel_IComparable
- *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- */
-interface KDAPHPExcel_IComparable
+interface PHPExcel_IComparable
 {
-	/**
-	 * Get hash code
-	 *
-	 * @return string	Hash code
-	 */
-	public function getHashCode();
-
+    /**
+     * Get hash code
+     *
+     * @return string    Hash code
+     */
+    public function getHashCode();
 }

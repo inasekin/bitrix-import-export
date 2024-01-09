@@ -29,6 +29,10 @@ class CKDAImportExcel {
 	
 	function __construct($filename, $params, $fparams, $stepparams, $pid = false)
 	{
+		file_put_contents($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/data.importexportexcel/logs/construct.php", print_r($filename, true), FILE_APPEND);
+		file_put_contents($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/data.importexportexcel/logs/construct.php", print_r($params, true), FILE_APPEND);
+		file_put_contents($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/data.importexportexcel/logs/construct.php", print_r($fparams, true), FILE_APPEND);
+		file_put_contents($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/data.importexportexcel/logs/construct.php", print_r($stepparams, true), FILE_APPEND);
 		$this->filename = $_SERVER['DOCUMENT_ROOT'].$filename;
 		$this->params = $params;
 		$this->fparams = $fparams;
@@ -216,7 +220,8 @@ class CKDAImportExcel {
 		}
 		if($this->params['OPTIMIZE_RAM']=='Y' || $this->stepparams['optimizeRam']=='Y')
 		{
-			KDAPHPExcel_Settings::setZipClass(KDAPHPExcel_Settings::KDAIEZIPARCHIVE);
+			//KDAPHPExcel_Settings::setZipClass(KDAPHPExcel_Settings::KDAIEZIPARCHIVE);
+			PHPExcel_Settings::setZipClass(PHPExcel_Settings::KDAIEZIPARCHIVE);
 		}
 	}
 	
@@ -1135,7 +1140,8 @@ class CKDAImportExcel {
 	
 	public function InitImport()
 	{
-		$this->objReader = KDAPHPExcel_IOFactory::createReaderForFile($this->filename);
+		//$this->objReader = KDAPHPExcel_IOFactory::createReaderForFile($this->filename);
+		$this->objReader = PHPExcel_IOFactory::createReaderForFile($this->filename);
 		$this->worksheetNames = array();
 		if(is_callable(array($this->objReader, 'listWorksheetNames')))
 		{
@@ -1311,10 +1317,12 @@ class CKDAImportExcel {
 		$this->fieldOnlyNewOffer = array();
 		$this->fieldsForSkuGen = array();
 		$this->fieldsBindToGenSku = array();
+		//file_put_contents($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/data.importexportexcel/logs/errors.php", print_r($filedList, true), FILE_APPEND);
+		// errors
 		foreach($filedList as $k=>$field)
 		{
 			$fieldParams = $this->fparams[$this->worksheetNum][$k];
-			if(preg_match('/^(ICAT_PRICE\d+_PRICE|ICAT_PURCHASING_PRICE)$/', $field) && $fieldParams['PRICE_USE_EXT']=='Y')
+			if(preg_match('/^(ICAT_PRICE\d+_PRICE|ICAT_PURCHASING_PRICE)$/', $field) && (!empty($fieldParams['PRICE_USE_EXT']) && $fieldParams['PRICE_USE_EXT']=='Y'))
 			{
 				$this->fieldSettings[$field.'|QUANTITY_FROM='.$fieldParams['PRICE_QUANTITY_FROM'].'|QUANTITY_TO='.$fieldParams['PRICE_QUANTITY_TO']] = $fieldParams;
 			}
@@ -1322,14 +1330,14 @@ class CKDAImportExcel {
 			{
 				$this->fieldSettings[$field] = $fieldParams;
 				if(strpos($field, '|')!==false) $this->fieldSettings[substr($field, 0, strpos($field, '|'))] = $fieldParams;
-				if($fieldParams['HLBL_FIELD']) $this->fieldSettings[$field.'/'.$fieldParams['HLBL_FIELD']] = $fieldParams;
+				if(!empty($fieldParams['HLBL_FIELD']) && $fieldParams['HLBL_FIELD']) $this->fieldSettings[$field.'/'.$fieldParams['HLBL_FIELD']] = $fieldParams;
 			}
 			$this->fieldSettingsExtra[$k] = $fieldParams;
 			if(isset($this->fparams[$this->worksheetNum]['SECTION_'.$k]))
 			{
 				$this->fieldSettingsExtra['SECTION_'.$k] = $this->fparams[$this->worksheetNum]['SECTION_'.$k];
 			}
-			if($this->fieldSettings[$field]['SET_NEW_ONLY']=='Y')
+			if(!empty($this->fieldSettings[$field]['SET_NEW_ONLY']) && $this->fieldSettings[$field]['SET_NEW_ONLY']=='Y')
 			{
 				if(strpos($field, 'OFFER_')===0) $this->fieldOnlyNewOffer[] = substr($field, 6);
 				else $this->fieldOnlyNew[] = $field;
@@ -1402,8 +1410,10 @@ class CKDAImportExcel {
 					foreach($arMergedCellsPE as $coord)
 					{
 						list($coord1, $coord2) = explode(':', $coord, 2);
-						$arCoords1 = KDAPHPExcel_Cell::coordinateFromString($coord1);
-						$arCoords2 = KDAPHPExcel_Cell::coordinateFromString($coord2);
+						//$arCoords1 = KDAPHPExcel_Cell::coordinateFromString($coord1);
+						//$arCoords2 = KDAPHPExcel_Cell::coordinateFromString($coord2);
+						$arCoords1 = PHPExcel_Cell::coordinateFromString($coord1);
+						$arCoords2 = PHPExcel_Cell::coordinateFromString($coord2);
 						$arMergedCells[$arCoords1[0]][$coord] = array($arCoords1[1], $arCoords2[1]);
 						$arMergedCells[$arCoords2[0]][$coord] = array($arCoords1[1], $arCoords2[1]);
 					}
@@ -1412,13 +1422,16 @@ class CKDAImportExcel {
 				foreach($drawCollection as $drawItem)
 				{
 					$coord = $drawItem->getCoordinates();
-					$arPartsCoord = KDAPHPExcel_Cell::coordinateFromString($coord);
-					$maxDrawCol = max($maxDrawCol, KDAPHPExcel_Cell::columnIndexFromString($arPartsCoord[0]));
+					//$arPartsCoord = KDAPHPExcel_Cell::coordinateFromString($coord);
+					$arPartsCoord = PHPExcel_Cell::coordinateFromString($coord);
+					//$maxDrawCol = max($maxDrawCol, KDAPHPExcel_Cell::columnIndexFromString($arPartsCoord[0]));
+					$maxDrawCol = max($maxDrawCol, PHPExcel_Cell::columnIndexFromString($arPartsCoord[0]));
 					$arPartsCoordTo = array();
 					if(is_callable(array($drawItem, 'getCoordinatesTo')) && ($coordTo = $drawItem->getCoordinatesTo()))
 					{
-						$arPartsCoordTo = KDAPHPExcel_Cell::coordinateFromString($coordTo);
-					}				
+						//$arPartsCoordTo = KDAPHPExcel_Cell::coordinateFromString($coordTo);
+						$arPartsCoordTo = PHPExcel_Cell::coordinateFromString($coordTo);
+					}
 					$arCoords = array();
 					if(!empty($arPartsCoordTo))
 					{
@@ -1466,7 +1479,7 @@ class CKDAImportExcel {
 		$this->useNotes = false;
 		foreach($this->fieldSettingsExtra as $k=>$v)
 		{
-			if(is_array($v['CONVERSION']))
+			if(!empty($v['CONVERSION']) && is_array($v['CONVERSION']))
 			{
 				foreach($v['CONVERSION'] as $k2=>$v2)
 				{
@@ -1483,7 +1496,8 @@ class CKDAImportExcel {
 		}
 		$this->conv = new \Bitrix\KdaImportexcel\Conversion($this, $iblockId, $this->fieldSettings);
 		
-		$this->worksheetColumns = max(KDAPHPExcel_Cell::columnIndexFromString($this->worksheet->getHighestDataColumn()), $maxDrawCol);
+		//$this->worksheetColumns = max(KDAPHPExcel_Cell::columnIndexFromString($this->worksheet->getHighestDataColumn()), $maxDrawCol);
+		$this->worksheetColumns = max(PHPExcel_Cell::columnIndexFromString($this->worksheet->getHighestDataColumn()), $maxDrawCol);
 		$this->worksheetRows = min($this->maxReadRows, $this->worksheet->getHighestDataRow()+1);
 		$this->worksheetCurrentRow = $worksheetCurrentRow;
 		if($this->worksheet)
@@ -1846,10 +1860,13 @@ class CKDAImportExcel {
 			$k = $key;
 			if(strpos($k, '_')!==false) $k = substr($k, 0, strpos($k, '_'));
 			$value = $arItem[$k];
-			if($this->fieldSettings[$field]['NOT_TRIM']=='Y') $value = $arItem['~'.$k];
+			if(!empty($this->fieldSettings[$field]['NOT_TRIM']) && $this->fieldSettings[$field]['NOT_TRIM']=='Y') $value = $arItem['~'.$k];
 			$origValue = $arItem['~'.$k];
-			
-			$conversions = (isset($this->fieldSettingsExtra[$key]) ? $this->fieldSettingsExtra[$key]['CONVERSION'] : $this->fieldSettings[$field]['CONVERSION']);
+
+
+			if (!empty($this->fieldSettingsExtra[$key]['CONVERSION']) || !empty($this->fieldSettingsExtra[$field]['CONVERSION'])) {
+				$conversions = (isset($this->fieldSettingsExtra[$key]) ? $this->fieldSettingsExtra[$key]['CONVERSION'] : $this->fieldSettings[$field]['CONVERSION']);
+			}
 			if(!empty($conversions))
 			{
 				$eqValues = (bool)($value===$origValue);
@@ -1943,7 +1960,7 @@ class CKDAImportExcel {
 				
 				$arPrice = explode('_', substr($field, 10), 2);
 				$pkey = $arPrice[1];
-				if($pkey=='PRICE' && $this->fieldSettingsExtra[$key]['PRICE_USE_EXT']=='Y')
+				if($pkey=='PRICE' && (!empty($this->fieldSettingsExtra[$key]['PRICE_USE_EXT']) && $this->fieldSettingsExtra[$key]['PRICE_USE_EXT']=='Y'))
 				{
 					$pkey = $pkey.'|QUANTITY_FROM='.$this->CalcFloatValue($this->fieldSettingsExtra[$key]['PRICE_QUANTITY_FROM']).'|QUANTITY_TO='.$this->CalcFloatValue($this->fieldSettingsExtra[$key]['PRICE_QUANTITY_TO']);
 				}
@@ -2230,7 +2247,7 @@ class CKDAImportExcel {
 					
 					foreach($arElement as $k=>$v)
 					{
-						$action = $this->fieldSettings['IE_'.$k]['LOADING_MODE'];
+						$action = (!empty($this->fieldSettings['IE_'.$k]['LOADING_MODE']) ? $this->fieldSettings['IE_'.$k]['LOADING_MODE'] : "");
 						if($action)
 						{
 							if($action=='ADD_BEFORE') $arFieldsElement2[$k] = $arFieldsElement2[$k].$v;
@@ -2586,7 +2603,8 @@ class CKDAImportExcel {
 		{
 			if($arFieldsElement[$keyText])
 			{
-				if($this->fieldSettings[($isOffer ? 'OFFER_' : '').'IE_'.$keyText]['LOAD_BY_EXTLINK']=='Y')
+
+				if(!empty($this->fieldSettings[($isOffer ? 'OFFER_' : '').'IE_'.$keyText]['LOAD_BY_EXTLINK']) && $this->fieldSettings[($isOffer ? 'OFFER_' : '').'IE_'.$keyText]['LOAD_BY_EXTLINK']=='Y')
 				{
 					$arFieldsElement[$keyText] = \Bitrix\KdaImportexcel\IUtils::DownloadTextTextByLink($arFieldsElement[$keyText]);
 				}
@@ -3266,7 +3284,9 @@ class CKDAImportExcel {
 			}
 			if($uid)
 			{
-				$substringMode = $fs['UID_SEARCH_SUBSTRING'];
+				if (!empty($fs['UID_SEARCH_SUBSTRING'])) {
+					$substringMode = $fs['UID_SEARCH_SUBSTRING'];
+				}
 				if(!in_array($substringMode, array('Y', 'B', 'E'))) $substringMode = '';
 				$arUid[] = array(
 					'uid' => $uid,
@@ -3450,7 +3470,8 @@ class CKDAImportExcel {
 		
 		if($propDef	&& $propDef['PROPERTY_TYPE']=='L')
 		{
-			if($fieldSettingsExtra['PROPLIST_FIELD']) $key2 = $fieldSettingsExtra['PROPLIST_FIELD'];
+
+			if(!empty($fieldSettingsExtra['PROPLIST_FIELD'])) $key2 = $fieldSettingsExtra['PROPLIST_FIELD'];
 			else $key2 = 'VALUE';
 			if(!isset($arFieldsPropsItem[$key2])) $arFieldsPropsItem[$key2] = null;
 			if(!isset($arFieldsPropsOrigItem[$key2])) $arFieldsPropsOrigItem[$key2] = null;
@@ -4162,13 +4183,13 @@ class CKDAImportExcel {
 			$arFile['external_id'] = 'i_'.md5(serialize(array('width'=>$width, 'height'=>$height, 'name'=>preg_replace('/__imp\d+imp__/', '', $arFile['name']), 'size'=>$arFile['size'])));
 		}
 		if(!empty($arFile) && strpos($arFile['type'], 'html')!==false) $arFile = array();
-		if(array_key_exists('size', $arFile) && $arFile['size']==0 && filesize($arFile['tmp_name'])==0) $arFile = array();
+		if(is_array($arFile) && array_key_exists('size', $arFile) && $arFile['size']==0 && filesize($arFile['tmp_name'])==0) $arFile = array();
 		if(!empty($arFile) && $checkFormat && !empty($fileTypes))
 		{
 			$ext = ToLower(CKDAImportUtils::GetFileExtension($arFile['name']));
 			if(!in_array($ext, $fileTypes)) $arFile = array();
 		}
-		if(array_key_exists('name', $arFile) && preg_match('/^[\.\-_]*(\.[^\.]*)?$/', $arFile['name'])) $arFile['name'] = 'i'.$arFile['name'];
+		if(is_array($arFile) && array_key_exists('name', $arFile) && preg_match('/^[\.\-_]*(\.[^\.]*)?$/', $arFile['name'])) $arFile['name'] = 'i'.$arFile['name'];
 		
 		return $arFile;
 	}
@@ -4605,7 +4626,7 @@ class CKDAImportExcel {
 			if($sectId)
 			{
 				$this->BeforeSectionSave($sectId, "add");
-				\Bitrix\KdaImportexcel\DataManager\InterhitedpropertyValues::ClearSectionValues($IBLOCK_ID, $sectId, $arFields);
+				//\Bitrix\KdaImportexcel\DataManager\InterhitedpropertyValues::ClearSectionValues($IBLOCK_ID, $sectId, $arFields);
 				$this->AfterSectionSave($sectId, $IBLOCK_ID, $arFields);
 				$this->SaveElementId($sectId, 'S');
 				$this->stepparams['section_added_line']++;
@@ -5167,7 +5188,7 @@ class CKDAImportExcel {
 	{
 		$separator = $this->params['ELEMENT_MULTIPLE_SEPARATOR'];
 		$fsKey = ($this->conv->GetSkuMode() ? 'OFFER_' : '').'IP_PROP'.$k;
-		if($this->fieldSettings[$fsKey]['CHANGE_MULTIPLE_SEPARATOR']=='Y')
+		if(!empty($this->fieldSettings[$fsKey]['CHANGE_MULTIPLE_SEPARATOR']) && $this->fieldSettings[$fsKey]['CHANGE_MULTIPLE_SEPARATOR']=='Y')
 		{
 			$separator = $this->GetSeparator($this->fieldSettings[$fsKey]['MULTIPLE_SEPARATOR']);
 		}
@@ -5286,8 +5307,8 @@ class CKDAImportExcel {
 				else $arVal = $this->GetMultipleProperty($prop, $k);
 				
 				$fsKey = ($this->conv->GetSkuMode() ? 'OFFER_' : '').'IP_PROP'.$k;
-				$fromValue = $this->fieldSettings[$fsKey]['MULTIPLE_FROM_VALUE'];
-				$toValue = $this->fieldSettings[$fsKey]['MULTIPLE_TO_VALUE'];
+				$fromValue = (!empty($this->fieldSettings[$fsKey]['MULTIPLE_FROM_VALUE']) ? $this->fieldSettings[$fsKey]['MULTIPLE_FROM_VALUE'] : "");
+				$toValue = (!empty($this->fieldSettings[$fsKey]['MULTIPLE_TO_VALUE']) ? $this->fieldSettings[$fsKey]['MULTIPLE_TO_VALUE'] : "");
 				if(is_numeric($fromValue) || is_numeric($toValue))
 				{
 					$from = (is_numeric($fromValue) ? ((int)$fromValue >= 0 ? ((int)$fromValue - 1) : (int)$fromValue) : 0);
@@ -5471,7 +5492,7 @@ class CKDAImportExcel {
 				$saveOldVals = false;
 				if($propsDef[$pk]['MULTIPLE']=='Y')
 				{
-					$saveOldVals = (bool)($this->fieldSettings[$fsKey]['MULTIPLE_SAVE_OLD_VALUES']=='Y');
+					$saveOldVals = (bool)(!empty($this->fieldSettings[$fsKey]['MULTIPLE_SAVE_OLD_VALUES']) && $this->fieldSettings[$fsKey]['MULTIPLE_SAVE_OLD_VALUES']=='Y');
 					if(!in_array($fsKey, $fieldList) && $this->fieldSettings['IP_LIST_PROPS']['PROPLIST_NEWPROP_SAVE_OLD_VALUES']=='Y') $saveOldVals = true;
 					if(!$saveOldVals && isset($arProps[$pk]) && is_array($arProps[$pk]) && count(preg_grep('/^(ADD|REMOVE)_/', array_keys($arProps[$pk])))>0) $saveOldVals = true;
 				}
@@ -6768,7 +6789,8 @@ class CKDAImportExcel {
 		if($pid!==false) \CKDAImportProfile::getInstance()->SetImportParams($pid, '', array(), $arParams);
 		$selfobj = new CKDAImportExcelStatic($arParams, $file);
 		$file = $_SERVER['DOCUMENT_ROOT'].$file;
-		$objReader = KDAPHPExcel_IOFactory::createReaderForFile($file);		
+		//$objReader = KDAPHPExcel_IOFactory::createReaderForFile($file);
+		$objReader = PHPExcel_IOFactory::createReaderForFile($file);
 		if($arParams['ELEMENT_NOT_LOAD_STYLES']=='Y' && $arParams['ELEMENT_NOT_LOAD_FORMATTING']=='Y')
 		{
 			$objReader->setReadDataOnly(true);
@@ -6796,13 +6818,16 @@ class CKDAImportExcel {
 					foreach($drawCollection as $drawItem)
 					{
 						$coord = $drawItem->getCoordinates();
-						$arCoords = KDAPHPExcel_Cell::coordinateFromString($coord);
-						$maxDrawCol = max($maxDrawCol, KDAPHPExcel_Cell::columnIndexFromString($arCoords[0]));
+						//$arCoords = KDAPHPExcel_Cell::coordinateFromString($coord);
+						$arCoords = PHPExcel_Cell::coordinateFromString($coord);
+						//$maxDrawCol = max($maxDrawCol, KDAPHPExcel_Cell::columnIndexFromString($arCoords[0]));
+						$maxDrawCol = max($maxDrawCol, PHPExcel_Cell::columnIndexFromString($arCoords[0]));
 					}
 				}
 			}
 			
-			$columns_count = max(KDAPHPExcel_Cell::columnIndexFromString($worksheet->getHighestDataColumn()), $maxDrawCol);
+			//$columns_count = max(KDAPHPExcel_Cell::columnIndexFromString($worksheet->getHighestDataColumn()), $maxDrawCol);
+			$columns_count = max(PHPExcel_Cell::columnIndexFromString($worksheet->getHighestDataColumn()), $maxDrawCol);
 			$columns_count = min($columns_count, 5000);
 			$rows_count = $worksheet->getHighestDataRow();
 
@@ -7035,7 +7060,7 @@ class CKDAImportExcel {
 		return $dbRes;
 	}
 	
-	public function GetCellStyle($val, $modify = false)
+	public static function GetCellStyle($val, $modify = false)
 	{
 		$style = $val->getStyle();
 		if(!is_object($style)) return array();
@@ -7061,8 +7086,8 @@ class CKDAImportExcel {
 		if($modify)
 		{
 			$arStyle['EXT'] = array(
-				'COLOR' => $style->getFont()->getColor()->getRealRGB(),
-				'BACKGROUND' => ($style->getFill()->getFillType()=='solid' ? $style->getFill()->getStartColor()->getRealRGB() : ''),
+				'COLOR' => $style->getFont()->getColor()->getRGB(),
+				'BACKGROUND' => ($style->getFill()->getFillType()=='solid' ? $style->getFill()->getStartColor()->getRGB() : ''),
 			);
 		}
 		
@@ -7299,7 +7324,8 @@ class CKDAImportExcelStatic extends CKDAImportExcel
 	}
 }
 
-class KDAChunkReadFilter implements KDAPHPExcel_Reader_IReadFilter
+//class KDAChunkReadFilter implements KDAPHPExcel_Reader_IReadFilter
+class KDAChunkReadFilter implements PHPExcel_Reader_IReadFilter
 {
 	private $_startRow = 0;
 	private $_endRow = 0;

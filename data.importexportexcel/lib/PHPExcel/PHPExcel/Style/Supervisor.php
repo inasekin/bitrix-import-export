@@ -1,8 +1,9 @@
 <?php
+
 /**
- * KDAPHPExcel
+ * PHPExcel_Style_Supervisor
  *
- * Copyright (c) 2006 - 2013 KDAPHPExcel
+ * Copyright (c) 2006 - 2015 PHPExcel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,115 +19,107 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category   KDAPHPExcel
- * @package	KDAPHPExcel_Style
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- * @license	http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version	1.7.9, 2013-06-02
+ * @category   PHPExcel
+ * @package    PHPExcel_Style
+ * @copyright  Copyright (c) 2006 - 2015 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt    LGPL
+ * @version    ##VERSION##, ##DATE##
  */
-
-
-/**
- * KDAPHPExcel_Style_Supervisor
- *
- * @category   KDAPHPExcel
- * @package	KDAPHPExcel_Style
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- */
-abstract class KDAPHPExcel_Style_Supervisor
+abstract class PHPExcel_Style_Supervisor
 {
-	/**
-	 * Supervisor?
-	 *
-	 * @var boolean
-	 */
-	protected $_isSupervisor;
+    /**
+     * Supervisor?
+     *
+     * @var boolean
+     */
+    protected $isSupervisor;
 
-	/**
-	 * Parent. Only used for supervisor
-	 *
-	 * @var KDAPHPExcel_Style
-	 */
-	protected $_parent;
+    /**
+     * Parent. Only used for supervisor
+     *
+     * @var PHPExcel_Style
+     */
+    protected $parent;
 
-	/**
-	 * Create a new KDAPHPExcel_Style_Alignment
-	 *
-	 * @param	boolean	$isSupervisor	Flag indicating if this is a supervisor or not
-	 *									Leave this value at default unless you understand exactly what
-	 *										its ramifications are
-	 */
-	public function __construct($isSupervisor = FALSE)
-	{
-		// Supervisor?
-		$this->_isSupervisor = $isSupervisor;
-	}
+    /**
+     * Create a new PHPExcel_Style_Alignment
+     *
+     * @param    boolean    $isSupervisor    Flag indicating if this is a supervisor or not
+     *                                    Leave this value at default unless you understand exactly what
+     *                                        its ramifications are
+     */
+    public function __construct($isSupervisor = false)
+    {
+        // Supervisor?
+        $this->isSupervisor = $isSupervisor;
+    }
 
-	/**
-	 * Bind parent. Only used for supervisor
-	 *
-	 * @param KDAPHPExcel $parent
-	 * @return KDAPHPExcel_Style_Supervisor
-	 */
-	public function bindParent($parent, $parentPropertyName=NULL)
-	{
-		$this->_parent = $parent;
-		return $this;
-	}
+    /**
+     * Bind parent. Only used for supervisor
+     *
+     * @param PHPExcel $parent
+     * @return PHPExcel_Style_Supervisor
+     */
+    public function bindParent($parent, $parentPropertyName = null)
+    {
+        $this->parent = $parent;
+        return $this;
+    }
 
-	/**
-	 * Is this a supervisor or a cell style component?
-	 *
-	 * @return boolean
-	 */
-	public function getIsSupervisor()
-	{
-		return $this->_isSupervisor;
-	}
+    /**
+     * Is this a supervisor or a cell style component?
+     *
+     * @return boolean
+     */
+    public function getIsSupervisor()
+    {
+        return $this->isSupervisor;
+    }
 
-	/**
-	 * Get the currently active sheet. Only used for supervisor
-	 *
-	 * @return KDAPHPExcel_Worksheet
-	 */
-	public function getActiveSheet()
-	{
-		return $this->_parent->getActiveSheet();
-	}
+    /**
+     * Get the currently active sheet. Only used for supervisor
+     *
+     * @return PHPExcel_Worksheet
+     */
+    public function getActiveSheet()
+    {
+        return $this->parent->getActiveSheet();
+    }
 
-	/**
-	 * Get the currently active cell coordinate in currently active sheet.
-	 * Only used for supervisor
-	 *
-	 * @return string E.g. 'A1'
-	 */
-	public function getSelectedCells()
-	{
-		return $this->getActiveSheet()->getSelectedCells();
-	}
+    /**
+     * Get the currently active cell coordinate in currently active sheet.
+     * Only used for supervisor
+     *
+     * @return string E.g. 'A1'
+     */
+    public function getSelectedCells()
+    {
+        return $this->getActiveSheet()->getSelectedCells();
+    }
 
-	/**
-	 * Get the currently active cell coordinate in currently active sheet.
-	 * Only used for supervisor
-	 *
-	 * @return string E.g. 'A1'
-	 */
-	public function getActiveCell()
-	{
-		return $this->getActiveSheet()->getActiveCell();
-	}
+    /**
+     * Get the currently active cell coordinate in currently active sheet.
+     * Only used for supervisor
+     *
+     * @return string E.g. 'A1'
+     */
+    public function getActiveCell()
+    {
+        return $this->getActiveSheet()->getActiveCell();
+    }
 
-	/**
-	 * Implement PHP __clone to create a deep clone, not just a shallow copy.
-	 */
-	public function __clone() {
-		$vars = get_object_vars($this);
-		foreach ($vars as $key => $value) {
-			if ((is_object($value)) && ($key != '_parent')) {
-				$this->$key = clone $value;
-			} else {
-				$this->$key = $value;
-			}
-		}
-	}
+    /**
+     * Implement PHP __clone to create a deep clone, not just a shallow copy.
+     */
+    public function __clone()
+    {
+        $vars = get_object_vars($this);
+        foreach ($vars as $key => $value) {
+            if ((is_object($value)) && ($key != 'parent')) {
+                $this->$key = clone $value;
+            } else {
+                $this->$key = $value;
+            }
+        }
+    }
 }

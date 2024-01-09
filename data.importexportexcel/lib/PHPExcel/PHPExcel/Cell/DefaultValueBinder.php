@@ -1,8 +1,18 @@
 <?php
+
+/** PHPExcel root directory */
+if (!defined('PHPEXCEL_ROOT')) {
+    /**
+     * @ignore
+     */
+    define('PHPEXCEL_ROOT', dirname(__FILE__) . '/../../');
+    require(PHPEXCEL_ROOT . 'PHPExcel/Autoloader.php');
+}
+
 /**
- * KDAPHPExcel
+ * PHPExcel_Cell_DefaultValueBinder
  *
- * Copyright (c) 2006 - 2013 KDAPHPExcel
+ * Copyright (c) 2006 - 2015 PHPExcel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,52 +28,40 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel_Cell
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
+ * @category   PHPExcel
+ * @package    PHPExcel_Cell
+ * @copyright  Copyright (c) 2006 - 2015 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt    LGPL
- * @version    1.7.9, 2013-06-02
+ * @version    ##VERSION##, ##DATE##
  */
-
-
-/** KDAPHPExcel root directory */
-if (!defined('KDAPHPEXCEL_ROOT')) {
-    /**
-     * @ignore
-     */
-    define('KDAPHPEXCEL_ROOT', dirname(__FILE__) . '/../../');
-    require(KDAPHPEXCEL_ROOT . 'PHPExcel/Autoloader.php');
-}
-
-
-/**
- * KDAPHPExcel_Cell_DefaultValueBinder
- *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel_Cell
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- */
-class KDAPHPExcel_Cell_DefaultValueBinder implements KDAPHPExcel_Cell_IValueBinder
+class PHPExcel_Cell_DefaultValueBinder implements PHPExcel_Cell_IValueBinder
 {
     /**
      * Bind value to a cell
      *
-     * @param  KDAPHPExcel_Cell  $cell   Cell to bind value to
+     * @param  PHPExcel_Cell  $cell   Cell to bind value to
      * @param  mixed          $value  Value to bind in cell
      * @return boolean
      */
-    public function bindValue(KDAPHPExcel_Cell $cell, $value = null)
+    public function bindValue(PHPExcel_Cell $cell, $value = null)
     {
         // sanitize UTF-8 strings
         if (is_string($value)) {
-            $value = KDAPHPExcel_Shared_String::SanitizeUTF8($value);
+            $value = PHPExcel_Shared_String::SanitizeUTF8($value);
+        } elseif (is_object($value)) {
+            // Handle any objects that might be injected
+            if ($value instanceof DateTime) {
+                $value = $value->format('Y-m-d H:i:s');
+            } elseif (!($value instanceof PHPExcel_RichText)) {
+                $value = (string) $value;
+            }
         }
 
         // Set value explicit
-        $cell->setValueExplicit( $value, self::dataTypeForValue($value) );
+        $cell->setValueExplicit($value, self::dataTypeForValue($value));
 
         // Done!
-        return TRUE;
+        return true;
     }
 
     /**
@@ -72,35 +70,33 @@ class KDAPHPExcel_Cell_DefaultValueBinder implements KDAPHPExcel_Cell_IValueBind
      * @param   mixed  $pValue
      * @return  string
      */
-    public static function dataTypeForValue($pValue = null) {
+    public static function dataTypeForValue($pValue = null)
+    {
         // Match the value against a few data types
-        if (is_null($pValue)) {
-            return KDAPHPExcel_Cell_DataType::TYPE_NULL;
-
-        } elseif ($pValue === '' || $pValue{0} === '0') {
-            return KDAPHPExcel_Cell_DataType::TYPE_STRING;
-
-        } elseif ($pValue instanceof KDAPHPExcel_RichText) {
-            return KDAPHPExcel_Cell_DataType::TYPE_INLINE;
-
-        } elseif ($pValue{0} === '=' && strlen($pValue) > 1) {
-            return KDAPHPExcel_Cell_DataType::TYPE_FORMULA;
-
+        if ($pValue === null) {
+            return PHPExcel_Cell_DataType::TYPE_NULL;
+        } elseif ($pValue === '') {
+            return PHPExcel_Cell_DataType::TYPE_STRING;
+        } elseif ($pValue instanceof PHPExcel_RichText) {
+            return PHPExcel_Cell_DataType::TYPE_INLINE;
+        } elseif ($pValue[0] === '=' && strlen($pValue) > 1) {
+            return PHPExcel_Cell_DataType::TYPE_FORMULA;
         } elseif (is_bool($pValue)) {
-            return KDAPHPExcel_Cell_DataType::TYPE_BOOL;
-
+            return PHPExcel_Cell_DataType::TYPE_BOOL;
         } elseif (is_float($pValue) || is_int($pValue)) {
-            return KDAPHPExcel_Cell_DataType::TYPE_NUMERIC;
-
-        } elseif (preg_match('/^\-?([0-9]+\\.?[0-9]*|[0-9]*\\.?[0-9]+)$/', $pValue)) {
-            return KDAPHPExcel_Cell_DataType::TYPE_NUMERIC;
-
-        } elseif (is_string($pValue) && array_key_exists($pValue, KDAPHPExcel_Cell_DataType::getErrorCodes())) {
-            return KDAPHPExcel_Cell_DataType::TYPE_ERROR;
-
-        } else {
-            return KDAPHPExcel_Cell_DataType::TYPE_STRING;
-
+            return PHPExcel_Cell_DataType::TYPE_NUMERIC;
+        } elseif (preg_match('/^[\+\-]?([0-9]+\\.?[0-9]*|[0-9]*\\.?[0-9]+)([Ee][\-\+]?[0-2]?\d{1,3})?$/', $pValue)) {
+            $tValue = ltrim($pValue, '+-');
+            if (is_string($pValue) && $tValue[0] === '0' && strlen($tValue) > 1 && $tValue[1] !== '.') {
+                return PHPExcel_Cell_DataType::TYPE_STRING;
+            } elseif ((strpos($pValue, '.') === false) && ($pValue > PHP_INT_MAX)) {
+                return PHPExcel_Cell_DataType::TYPE_STRING;
+            }
+            return PHPExcel_Cell_DataType::TYPE_NUMERIC;
+        } elseif (is_string($pValue) && array_key_exists($pValue, PHPExcel_Cell_DataType::getErrorCodes())) {
+            return PHPExcel_Cell_DataType::TYPE_ERROR;
         }
+
+        return PHPExcel_Cell_DataType::TYPE_STRING;
     }
 }
