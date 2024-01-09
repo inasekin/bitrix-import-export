@@ -1,8 +1,9 @@
 <?php
+
 /**
- * KDAPHPExcel
+ * PHPExcel_WorksheetIterator
  *
- * Copyright (c) 2006 - 2013 KDAPHPExcel
+ * Copyright (c) 2006 - 2015 PHPExcel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,48 +19,37 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
+ * @category   PHPExcel
+ * @package    PHPExcel
+ * @copyright  Copyright (c) 2006 - 2015 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt    LGPL
- * @version    1.7.9, 2013-06-02
+ * @version    ##VERSION##, ##DATE##
  */
-
-
-/**
- * KDAPHPExcel_WorksheetIterator
- *
- * Used to iterate worksheets in KDAPHPExcel
- *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- */
-class KDAPHPExcel_WorksheetIterator implements Iterator
+class PHPExcel_WorksheetIterator implements Iterator
 {
     /**
      * Spreadsheet to iterate
      *
-     * @var KDAPHPExcel
+     * @var PHPExcel
      */
-    private $_subject;
+    private $subject;
 
     /**
      * Current iterator position
      *
      * @var int
      */
-    private $_position = 0;
+    private $position = 0;
 
     /**
      * Create a new worksheet iterator
      *
-     * @param KDAPHPExcel         $subject
+     * @param PHPExcel         $subject
      */
-    public function __construct(KDAPHPExcel $subject = null)
+    public function __construct(PHPExcel $subject = null)
     {
         // Set subject
-        $this->_subject = $subject;
+        $this->subject = $subject;
     }
 
     /**
@@ -67,7 +57,7 @@ class KDAPHPExcel_WorksheetIterator implements Iterator
      */
     public function __destruct()
     {
-        unset($this->_subject);
+        unset($this->subject);
     }
 
     /**
@@ -75,17 +65,17 @@ class KDAPHPExcel_WorksheetIterator implements Iterator
      */
     public function rewind()
     {
-        $this->_position = 0;
+        $this->position = 0;
     }
 
     /**
-     * Current KDAPHPExcel_Worksheet
+     * Current PHPExcel_Worksheet
      *
-     * @return KDAPHPExcel_Worksheet
+     * @return PHPExcel_Worksheet
      */
     public function current()
     {
-        return $this->_subject->getSheet($this->_position);
+        return $this->subject->getSheet($this->position);
     }
 
     /**
@@ -95,7 +85,7 @@ class KDAPHPExcel_WorksheetIterator implements Iterator
      */
     public function key()
     {
-        return $this->_position;
+        return $this->position;
     }
 
     /**
@@ -103,16 +93,16 @@ class KDAPHPExcel_WorksheetIterator implements Iterator
      */
     public function next()
     {
-        ++$this->_position;
+        ++$this->position;
     }
 
     /**
-     * More KDAPHPExcel_Worksheet instances available?
+     * More PHPExcel_Worksheet instances available?
      *
      * @return boolean
      */
     public function valid()
     {
-        return $this->_position < $this->_subject->getSheetCount();
+        return $this->position < $this->subject->getSheetCount();
     }
 }

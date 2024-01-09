@@ -1,8 +1,9 @@
 <?php
+
 /**
- * KDAPHPExcel
+ * PHPExcel_Reader_IReader
  *
- * Copyright (c) 2006 - 2013 KDAPHPExcel
+ * Copyright (c) 2006 - 2015 PHPExcel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,36 +19,28 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel_Reader
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version    1.7.9, 2013-06-02
+ * @category   PHPExcel
+ * @package    PHPExcel_Reader
+ * @copyright  Copyright (c) 2006 - 2015 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt    LGPL
+ * @version    ##VERSION##, ##DATE##
  */
-
-
-/**
- * KDAPHPExcel_Reader_IReader
- *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel_Reader
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- */
-interface KDAPHPExcel_Reader_IReader
+interface PHPExcel_Reader_IReader
 {
-	/**
-	 * Can the current KDAPHPExcel_Reader_IReader read the file?
-	 *
-	 * @param 	string 		$pFilename
-	 * @return 	boolean
-	 */
-	public function canRead($pFilename);
+    /**
+     * Can the current PHPExcel_Reader_IReader read the file?
+     *
+     * @param     string         $pFilename
+     * @return     boolean
+     */
+    public function canRead($pFilename);
 
-	/**
-	 * Loads KDAPHPExcel from file
-	 *
-	 * @param 	string 		$pFilename
-	 * @throws 	KDAPHPExcel_Reader_Exception
-	 */
-	public function load($pFilename);
+    /**
+     * Loads PHPExcel from file
+     *
+     * @param     string         $pFilename
+     * @return  PHPExcel
+     * @throws     PHPExcel_Reader_Exception
+     */
+    public function load($pFilename);
 }

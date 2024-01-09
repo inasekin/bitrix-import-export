@@ -1,8 +1,9 @@
 <?php
+
 /**
- * KDAPHPExcel
+ * PHPExcel_Reader_IReadFilter
  *
- * Copyright (c) 2006 - 2013 KDAPHPExcel
+ * Copyright (c) 2006 - 2015 PHPExcel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,30 +19,21 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel_Reader
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version    1.7.9, 2013-06-02
+ * @category   PHPExcel
+ * @package    PHPExcel_Reader
+ * @copyright  Copyright (c) 2006 - 2015 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt    LGPL
+ * @version    ##VERSION##, ##DATE##
  */
-
-
-/**
- * KDAPHPExcel_Reader_IReadFilter
- *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel_Reader
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- */
-interface KDAPHPExcel_Reader_IReadFilter
+interface PHPExcel_Reader_IReadFilter
 {
-	/**
-	 * Should this cell be read?
-	 *
-	 * @param 	$column		String column index
-	 * @param 	$row			Row index
-	 * @param	$worksheetName	Optional worksheet name
-	 * @return	boolean
-	 */
-	public function readCell($column, $row, $worksheetName = '');
+    /**
+     * Should this cell be read?
+     *
+     * @param    $column           Column address (as a string value like "A", or "IV")
+     * @param    $row              Row number
+     * @param    $worksheetName    Optional worksheet name
+     * @return   boolean
+     */
+    public function readCell($column, $row, $worksheetName = '');
 }

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * KDAPHPExcel
+ * PHPExcel_RichText
  *
- * Copyright (c) 2006 - 2013 KDAPHPExcel
+ * Copyright (c) 2006 - 2015 PHPExcel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,65 +19,56 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel_RichText
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
+ * @category   PHPExcel
+ * @package    PHPExcel_RichText
+ * @copyright  Copyright (c) 2006 - 2015 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt    LGPL
- * @version    1.7.9, 2013-06-02
+ * @version    ##VERSION##, ##DATE##
  */
-
-
-/**
- * KDAPHPExcel_RichText
- *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel_RichText
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- */
-class KDAPHPExcel_RichText implements KDAPHPExcel_IComparable
+class PHPExcel_RichText implements PHPExcel_IComparable
 {
     /**
      * Rich text elements
      *
-     * @var KDAPHPExcel_RichText_ITextElement[]
+     * @var PHPExcel_RichText_ITextElement[]
      */
-    private $_richTextElements;
+    private $richTextElements;
 
     /**
-     * Create a new KDAPHPExcel_RichText instance
+     * Create a new PHPExcel_RichText instance
      *
-     * @param KDAPHPExcel_Cell $pCell
-     * @throws KDAPHPExcel_Exception
+     * @param PHPExcel_Cell $pCell
+     * @throws PHPExcel_Exception
      */
-    public function __construct(KDAPHPExcel_Cell $pCell = null)
+    public function __construct(PHPExcel_Cell $pCell = null)
     {
         // Initialise variables
-        $this->_richTextElements = array();
+        $this->richTextElements = array();
 
         // Rich-Text string attached to cell?
-        if ($pCell !== NULL) {
+        if ($pCell !== null) {
             // Add cell text and style
             if ($pCell->getValue() != "") {
-                $objRun = new KDAPHPExcel_RichText_Run($pCell->getValue());
+                $objRun = new PHPExcel_RichText_Run($pCell->getValue());
                 $objRun->setFont(clone $pCell->getParent()->getStyle($pCell->getCoordinate())->getFont());
                 $this->addText($objRun);
             }
 
             // Set parent value
-            $pCell->setValueExplicit($this, KDAPHPExcel_Cell_DataType::TYPE_STRING);
+            $pCell->setValueExplicit($this, PHPExcel_Cell_DataType::TYPE_STRING);
         }
     }
 
     /**
      * Add text
      *
-     * @param KDAPHPExcel_RichText_ITextElement $pText Rich text element
-     * @throws KDAPHPExcel_Exception
-     * @return KDAPHPExcel_RichText
+     * @param PHPExcel_RichText_ITextElement $pText Rich text element
+     * @throws PHPExcel_Exception
+     * @return PHPExcel_RichText
      */
-    public function addText(KDAPHPExcel_RichText_ITextElement $pText = null)
+    public function addText(PHPExcel_RichText_ITextElement $pText = null)
     {
-        $this->_richTextElements[] = $pText;
+        $this->richTextElements[] = $pText;
         return $this;
     }
 
@@ -84,12 +76,12 @@ class KDAPHPExcel_RichText implements KDAPHPExcel_IComparable
      * Create text
      *
      * @param string $pText Text
-     * @return KDAPHPExcel_RichText_TextElement
-     * @throws KDAPHPExcel_Exception
+     * @return PHPExcel_RichText_TextElement
+     * @throws PHPExcel_Exception
      */
     public function createText($pText = '')
     {
-        $objText = new KDAPHPExcel_RichText_TextElement($pText);
+        $objText = new PHPExcel_RichText_TextElement($pText);
         $this->addText($objText);
         return $objText;
     }
@@ -98,12 +90,12 @@ class KDAPHPExcel_RichText implements KDAPHPExcel_IComparable
      * Create text run
      *
      * @param string $pText Text
-     * @return KDAPHPExcel_RichText_Run
-     * @throws KDAPHPExcel_Exception
+     * @return PHPExcel_RichText_Run
+     * @throws PHPExcel_Exception
      */
     public function createTextRun($pText = '')
     {
-        $objText = new KDAPHPExcel_RichText_Run($pText);
+        $objText = new PHPExcel_RichText_Run($pText);
         $this->addText($objText);
         return $objText;
     }
@@ -118,8 +110,8 @@ class KDAPHPExcel_RichText implements KDAPHPExcel_IComparable
         // Return value
         $returnValue = '';
 
-        // Loop through all KDAPHPExcel_RichText_ITextElement
-        foreach ($this->_richTextElements as $text) {
+        // Loop through all PHPExcel_RichText_ITextElement
+        foreach ($this->richTextElements as $text) {
             $returnValue .= $text->getText();
         }
 
@@ -140,26 +132,26 @@ class KDAPHPExcel_RichText implements KDAPHPExcel_IComparable
     /**
      * Get Rich Text elements
      *
-     * @return KDAPHPExcel_RichText_ITextElement[]
+     * @return PHPExcel_RichText_ITextElement[]
      */
     public function getRichTextElements()
     {
-        return $this->_richTextElements;
+        return $this->richTextElements;
     }
 
     /**
      * Set Rich Text elements
      *
-     * @param KDAPHPExcel_RichText_ITextElement[] $pElements Array of elements
-     * @throws KDAPHPExcel_Exception
-     * @return KDAPHPExcel_RichText
+     * @param PHPExcel_RichText_ITextElement[] $pElements Array of elements
+     * @throws PHPExcel_Exception
+     * @return PHPExcel_RichText
      */
     public function setRichTextElements($pElements = null)
     {
         if (is_array($pElements)) {
-            $this->_richTextElements = $pElements;
+            $this->richTextElements = $pElements;
         } else {
-            throw new KDAPHPExcel_Exception("Invalid KDAPHPExcel_RichText_ITextElement[] array passed.");
+            throw new PHPExcel_Exception("Invalid PHPExcel_RichText_ITextElement[] array passed.");
         }
         return $this;
     }
@@ -172,13 +164,13 @@ class KDAPHPExcel_RichText implements KDAPHPExcel_IComparable
     public function getHashCode()
     {
         $hashElements = '';
-        foreach ($this->_richTextElements as $element) {
+        foreach ($this->richTextElements as $element) {
             $hashElements .= $element->getHashCode();
         }
 
         return md5(
-              $hashElements
-            . __CLASS__
+            $hashElements .
+            __CLASS__
         );
     }
 

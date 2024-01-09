@@ -282,8 +282,10 @@ class CKDAExportExcel {
 				{
 					$lastSectionKey = $sectionKey = $lastPage = $page = 1;
 					reset($arListIndexes);
-					while(($next = each($arListIndexes)) && $next['value']!=$listIndex){}
-					$next = each($arListIndexes);
+					//while(($next = each($arListIndexes)) && $next['value']!=$listIndex){}
+					//$next = each($arListIndexes);
+					while(($next = self::eachData($arListIndexes)) && $next['value']!=$listIndex){}
+					$next = self::eachData($arListIndexes);
 					$listIndex = (int)$next['value'];
 					unset($this->sepSectionIds);
 					$this->stepparams['parentSections'] = array();
@@ -1817,9 +1819,10 @@ class CKDAExportExcel {
 		}
 		
 		$arAllFields = array_merge($arFields, $arFieldsAdded);
-
 		$bOnlySections = $bOnlyCTable = true;
-		while(($bOnlySections || $bOnlyCTable) && $arCurField = each($arAllFields))
+		//while(($bOnlySections || $bOnlyCTable) && $arCurField = each($arAllFields))
+
+		while(($bOnlySections || $bOnlyCTable) && $arCurField = self::eachData($arAllFields) )
 		{
 			if(!preg_match('/^ISECT(\d+)?_/', $arCurField['value']) && $arCurField['value']!='IE_SECTION_PATH' && $arCurField['value']!='')
 			{
@@ -4354,6 +4357,14 @@ class CKDAExportExcel {
 	public function GetSeparator($sep)
 	{
 		return strtr((string)$sep, array('\r'=>"\r", '\n'=>"\n", '\t'=>"\t"));
+	}
+
+	public function eachData($array) {
+		$el = [];
+		$el["key"] = key($array);
+		$el["value"] = current($array);
+		next($array);
+		return $el;
 	}
 }
 ?>

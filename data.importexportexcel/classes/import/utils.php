@@ -627,7 +627,7 @@ class CKDAImportUtils {
 		COption::SetOptionInt('main', 'IE_STAT_TIME', time());
 	}
 	
-	public function transformName($name, $bForceMD5=false, $bSkipExt=false)
+	public static function transformName($name, $bForceMD5=false, $bSkipExt=false)
 	{
 		//safe filename without path
 		$fileName = GetFileName($name);
@@ -669,7 +669,7 @@ class CKDAImportUtils {
 		return $fileName;
 	}
 
-	protected function validateFile($strFileName, $arFile)
+	protected static function validateFile($strFileName, $arFile)
 	{
 		if($strFileName == '')
 			return GetMessage("FILE_BAD_FILENAME");
@@ -2517,7 +2517,7 @@ class CKDAImportUtils {
 		return strtolower($logicalEncoding);
 	}
 	
-	public function GetUserAgent()
+	public static function GetUserAgent()
 	{
 		if(empty(self::$arAgents))
 		{

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * KDAPHPExcel
+ * PHPExcel_Chart_PlotArea
  *
- * Copyright (c) 2006 - 2013 KDAPHPExcel
+ * Copyright (c) 2006 - 2015 PHPExcel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,108 +19,108 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category	KDAPHPExcel
- * @package		KDAPHPExcel_Chart
- * @copyright	Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- * @license		http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version		1.7.9, 2013-06-02
+ * @category    PHPExcel
+ * @package        PHPExcel_Chart
+ * @copyright    Copyright (c) 2006 - 2015 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @license        http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt    LGPL
+ * @version        ##VERSION##, ##DATE##
  */
-
-
-/**
- * KDAPHPExcel_Chart_PlotArea
- *
- * @category	KDAPHPExcel
- * @package		KDAPHPExcel_Chart
- * @copyright	Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- */
-class KDAPHPExcel_Chart_PlotArea
+class PHPExcel_Chart_PlotArea
 {
-	/**
-	 * PlotArea Layout
-	 *
-	 * @var KDAPHPExcel_Chart_Layout
-	 */
-	private $_layout = null;
+    /**
+     * PlotArea Layout
+     *
+     * @var PHPExcel_Chart_Layout
+     */
+    private $layout = null;
 
-	/**
-	 * Plot Series
-	 *
-	 * @var array of KDAPHPExcel_Chart_DataSeries
-	 */
-	private $_plotSeries = array();
+    /**
+     * Plot Series
+     *
+     * @var array of PHPExcel_Chart_DataSeries
+     */
+    private $plotSeries = array();
 
-	/**
-	 * Create a new KDAPHPExcel_Chart_PlotArea
-	 */
-	public function __construct(KDAPHPExcel_Chart_Layout $layout = null, $plotSeries = array())
-	{
-		$this->_layout = $layout;
-		$this->_plotSeries = $plotSeries;
-	}
+    /**
+     * Create a new PHPExcel_Chart_PlotArea
+     */
+    public function __construct(PHPExcel_Chart_Layout $layout = null, $plotSeries = array())
+    {
+        $this->layout = $layout;
+        $this->plotSeries = $plotSeries;
+    }
 
-	/**
-	 * Get Layout
-	 *
-	 * @return KDAPHPExcel_Chart_Layout
-	 */
-	public function getLayout() {
-		return $this->_layout;
-	}
+    /**
+     * Get Layout
+     *
+     * @return PHPExcel_Chart_Layout
+     */
+    public function getLayout()
+    {
+        return $this->layout;
+    }
 
-	/**
-	 * Get Number of Plot Groups
-	 *
-	 * @return array of KDAPHPExcel_Chart_DataSeries
-	 */
-	public function getPlotGroupCount() {
-		return count($this->_plotSeries);
-	}
+    /**
+     * Get Number of Plot Groups
+     *
+     * @return array of PHPExcel_Chart_DataSeries
+     */
+    public function getPlotGroupCount()
+    {
+        return count($this->plotSeries);
+    }
 
-	/**
-	 * Get Number of Plot Series
-	 *
-	 * @return integer
-	 */
-	public function getPlotSeriesCount() {
-		$seriesCount = 0;
-		foreach($this->_plotSeries as $plot) {
-			$seriesCount += $plot->getPlotSeriesCount();
-		}
-		return $seriesCount;
-	}
+    /**
+     * Get Number of Plot Series
+     *
+     * @return integer
+     */
+    public function getPlotSeriesCount()
+    {
+        $seriesCount = 0;
+        foreach ($this->plotSeries as $plot) {
+            $seriesCount += $plot->getPlotSeriesCount();
+        }
+        return $seriesCount;
+    }
 
-	/**
-	 * Get Plot Series
-	 *
-	 * @return array of KDAPHPExcel_Chart_DataSeries
-	 */
-	public function getPlotGroup() {
-		return $this->_plotSeries;
-	}
+    /**
+     * Get Plot Series
+     *
+     * @return array of PHPExcel_Chart_DataSeries
+     */
+    public function getPlotGroup()
+    {
+        return $this->plotSeries;
+    }
 
-	/**
-	 * Get Plot Series by Index
-	 *
-	 * @return KDAPHPExcel_Chart_DataSeries
-	 */
-	public function getPlotGroupByIndex($index) {
-		return $this->_plotSeries[$index];
-	}
+    /**
+     * Get Plot Series by Index
+     *
+     * @return PHPExcel_Chart_DataSeries
+     */
+    public function getPlotGroupByIndex($index)
+    {
+        return $this->plotSeries[$index];
+    }
 
-	/**
-	 * Set Plot Series
-	 *
-	 * @param [KDAPHPExcel_Chart_DataSeries]
-	 */
-	public function setPlotSeries($plotSeries = array()) {
-		$this->_plotSeries = $plotSeries;
-	}
+    /**
+     * Set Plot Series
+     *
+     * @param [PHPExcel_Chart_DataSeries]
+     * @return PHPExcel_Chart_PlotArea
+     */
+    public function setPlotSeries($plotSeries = array())
+    {
+        $this->plotSeries = $plotSeries;
+        
+        return $this;
+    }
 
-	public function refresh(KDAPHPExcel_Worksheet $worksheet) {
-	    foreach($this->_plotSeries as $plotSeries) {
-			$plotSeries->refresh($worksheet);
-		}
-	}
-
+    public function refresh(PHPExcel_Worksheet $worksheet)
+    {
+        foreach ($this->plotSeries as $plotSeries) {
+            $plotSeries->refresh($worksheet);
+        }
+    }
 }

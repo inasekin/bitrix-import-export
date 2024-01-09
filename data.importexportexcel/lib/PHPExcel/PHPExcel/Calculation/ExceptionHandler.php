@@ -1,8 +1,9 @@
 <?php
+
 /**
- * KDAPHPExcel
+ * PHPExcel_Calculation_ExceptionHandler
  *
- * Copyright (c) 2006 - 2013 KDAPHPExcel
+ * Copyright (c) 2006 - 2015 PHPExcel
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,32 +19,27 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel_Calculation
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- * @license	http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version	1.7.9, 2013-06-02
+ * @category   PHPExcel
+ * @package    PHPExcel_Calculation
+ * @copyright  Copyright (c) 2006 - 2015 PHPExcel (http://www.codeplex.com/PHPExcel)
+ * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt    LGPL
+ * @version    ##VERSION##, ##DATE##
  */
+class PHPExcel_Calculation_ExceptionHandler
+{
+    /**
+     * Register errorhandler
+     */
+    public function __construct()
+    {
+        set_error_handler(array('PHPExcel_Calculation_Exception', 'errorHandlerCallback'), E_ALL);
+    }
 
-/**
- * KDAPHPExcel_Calculation_ExceptionHandler
- *
- * @category   KDAPHPExcel
- * @package    KDAPHPExcel_Calculation
- * @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- */
-class KDAPHPExcel_Calculation_ExceptionHandler {
-	/**
-	 * Register errorhandler
-	 */
-	public function __construct() {
-		set_error_handler(array('KDAPHPExcel_Calculation_Exception', 'errorHandlerCallback'), E_ALL);
-	}
-
-	/**
-	 * Unregister errorhandler
-	 */
-	public function __destruct() {
-		restore_error_handler();
-	}
+    /**
+     * Unregister errorhandler
+     */
+    public function __destruct()
+    {
+        restore_error_handler();
+    }
 }

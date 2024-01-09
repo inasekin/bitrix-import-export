@@ -1,8 +1,9 @@
 <?php
+
 /**
- *  KDAPHPExcel
+ *  PHPExcel_Writer_IWriter
  *
- *  Copyright (c) 2006 - 2013 KDAPHPExcel
+ *  Copyright (c) 2006 - 2015 PHPExcel
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -18,29 +19,19 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- *  @category   KDAPHPExcel
- *  @package    KDAPHPExcel_Writer
- *  @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
+ *  @category   PHPExcel
+ *  @package    PHPExcel_Writer
+ *  @copyright  Copyright (c) 2006 - 2015 PHPExcel (http://www.codeplex.com/PHPExcel)
  *  @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt    LGPL
- *  @version    1.7.9, 2013-06-02
+ *  @version    ##VERSION##, ##DATE##
  */
-
-
-/**
- *  KDAPHPExcel_Writer_IWriter
- *
- *  @category   KDAPHPExcel
- *  @package    KDAPHPExcel_Writer
- *  @copyright  Copyright (c) 2006 - 2013 KDAPHPExcel (http://www.codeplex.com/KDAPHPExcel)
- */
-interface KDAPHPExcel_Writer_IWriter
+interface PHPExcel_Writer_IWriter
 {
     /**
-     *  Save KDAPHPExcel to file
+     *  Save PHPExcel to file
      *
      *  @param   string       $pFilename  Name of the file to save
-     *  @throws  KDAPHPExcel_Writer_Exception
+     *  @throws  PHPExcel_Writer_Exception
      */
-    public function save($pFilename = NULL);
-
+    public function save($pFilename = null);
 }
